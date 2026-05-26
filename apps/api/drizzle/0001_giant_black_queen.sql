@@ -1,0 +1,21 @@
+CREATE TABLE "profile" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"title" text NOT NULL,
+	"bio" text NOT NULL,
+	"journey" text NOT NULL,
+	"work" text NOT NULL,
+	"dob" text NOT NULL,
+	"location" text NOT NULL,
+	"email" text NOT NULL,
+	"mobile" text NOT NULL,
+	"language" text NOT NULL,
+	"profileImage" text NOT NULL,
+	"cv" text NOT NULL,
+	"yearExp" integer NOT NULL,
+	"projectsCompleted" integer NOT NULL,
+	"technologies" integer NOT NULL,
+	"happyClients" integer NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);

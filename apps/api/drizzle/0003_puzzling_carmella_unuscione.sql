@@ -1,0 +1,1 @@
+ALTER TABLE "profile" RENAME COLUMN "githubURL" TO "github_url";
