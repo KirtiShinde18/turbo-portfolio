@@ -6,7 +6,10 @@ import { APP_URL } from '../../config/env';
 
 export const authApi = createApi({
     reducerPath: 'authApi',
-    baseQuery: fetchBaseQuery({ baseUrl: `${APP_URL}/api/auth`, credentials: 'include' }),
+    baseQuery: fetchBaseQuery({ 
+        // baseUrl: `${APP_URL}/api/auth`, 
+        baseUrl: `/api/auth`, 
+        credentials: 'include' }),
     endpoints: (builder) => {
         return {
 
