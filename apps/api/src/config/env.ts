@@ -13,5 +13,9 @@ export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET as string
 export const PRODUCTION = "production" 
 export const COOKIE_NAME = "QUEEN"
 
-export const FRONTEND_URL = NODE_ENV === PRODUCTION ? LIVE_URL as string : LOCAL_URL as string
+// export const FRONTEND_URL = NODE_ENV === PRODUCTION ? LIVE_URL as string : LOCAL_URL as string
 
+export const FRONTEND_URL =
+  process.env.NODE_ENV === PRODUCTION
+    ? process.env.LIVE_URL!
+    : process.env.LOCAL_URL!;
