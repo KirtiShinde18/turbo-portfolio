@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
+import { useSignoutMutation } from '../redux/apis/auth.api';
 
 const text = "Admin Dashboard";
 
@@ -20,6 +21,21 @@ const links = [
 const AdminNavbar = () => {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
+
+    const [logoutQueen] = useSignoutMutation()
+    const router = useRouter()
+
+
+        // logout 
+    const handleLogout = async () => {
+    try {
+      await logoutQueen().unwrap(); // 🔥 clears cookie and triggers slice
+      toast.success("Logout success");
+      router.push("/signin"); // redirect to login page
+    } catch (error) {
+      toast.error("Unable to logout");
+    }
+    };
 
   return <>
   {/* <nav className="fixed w-full top-0 z-50 backdrop-blur bg-black/60 border-b border-white/10"> */}
@@ -81,7 +97,7 @@ const AdminNavbar = () => {
 
         {/* Logout button */}
           <button 
-            // onClick={handleLogout}
+            onClick={handleLogout}
             className="px-4 py-2 cursor-pointer bg-red-500 text-white rounded-lg hover:bg-red-600"
           >
             Logout
