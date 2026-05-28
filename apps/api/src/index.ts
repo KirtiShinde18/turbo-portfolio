@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoute from "./routes/auth.routes";
 import adminRoute from "./routes/admin.routes";
-import { FRONTEND_URL } from "./config/env";
+import { FRONTEND_URL, NODE_ENV, PRODUCTION } from "./config/env";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -28,8 +28,16 @@ app.get("/", (req, res) => {
 const PORT = 5500;
 
 // 🚀 Launching the server like a queen
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`); // 💻 My backend is officially slaying
-});
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`); // 💻 My backend is officially slaying
+// });
+
+// SERVER 🌎
+
+if(NODE_ENV !== PRODUCTION){
+    app.listen(PORT, () => {
+    console.log(` 🚀 Server running on port ${PORT}`)
+})
+}
 
 export default app
