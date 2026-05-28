@@ -14,3 +14,4 @@ export const PRODUCTION = "production"
 export const COOKIE_NAME = "QUEEN"
 
 export const FRONTEND_URL = NODE_ENV === PRODUCTION ? LIVE_URL as string : LOCAL_URL as string
+
