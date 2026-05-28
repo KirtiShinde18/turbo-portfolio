@@ -39,13 +39,15 @@ const BunnyLoader = () => {
 
       {/* Loading Text */}
       <div className="mt-6 text-gray-700 text-lg font-medium flex gap-1">
-        Bunny is loading
+        Please Wait
         <span className="animate-bounce">.</span>
         <span className="animate-bounce [animation-delay:0.2s]">.</span>
         <span className="animate-bounce [animation-delay:0.4s]">.</span>
       </div>
 
     </div>
+
+    
   )
 }
 

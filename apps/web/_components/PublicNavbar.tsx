@@ -2,22 +2,19 @@
 
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from 'react-toastify';
-
-const text = "Admin Dashboard";
 
 const links = [
-  { name: "Overview", href: "/admin" },
-  { name: "Profile", href: "/admin/profile" },
-  { name: "Projects", href: "/admin/projects" },
-  { name: "Skills", href: "/admin/skills" },
-  { name: "Experience", href: "/admin/experience" },
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Skills", href: "/skills" },
+  { name: "Projects", href: "/projects" },
+  { name: "Experience", href: "/experience" },
+  { name: "Contact", href: "/contact" },
 ];
 
-const AdminNavbar = () => {
+const PublicNavbar = () => {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
 
@@ -29,26 +26,13 @@ const AdminNavbar = () => {
         {/* Logo */}
         <div className="flex items-center gap-3">
           {/* <img src="/logo.png" alt="Logo" className="w-12 h-12" /> */}
-          {/* <h1 className="text-3xl font-bold bg-gradient-to-r from-[#4158D0] via-[#C850C0] to-[#d382c8] bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1> */}
-
-          {/* LOGO */}
-          <motion.h1 className="sm:text-2xl text-xl md:text-4xl font-bold leading-tight text-start">
-            {text.split("").map((char, index) => (
-              <motion.span
-                key={index}
-                className="inline-block"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08 }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.h1>
-
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#4158D0] via-[#C850C0] to-[#d382c8] bg-clip-text text-transparent">
+            Kirti
+          </h1>
+          
         </div>
+
+        
 
         {/* Desktop Menu */}
         {/* <div className="hidden md:flex gap-8 text-lg text-gray-300"> */}
@@ -71,34 +55,22 @@ const AdminNavbar = () => {
                   ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
                 ></span>
               </Link>
-
-
             );
           })}
-
-  
         </div>
 
-        {/* Logout button */}
-          <button 
-            // onClick={handleLogout}
-            className="px-4 py-2 cursor-pointer bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            Logout
-          </button>
+        {/* <ThemeToggle></ThemeToggle> */}
 
         {/* Desktop Button */}
-        {/* <div className="hidden md:flex gap-3">
+        <div className="hidden md:flex gap-3">
           <Link href="/contact">
-            <button className="bg-gradient-to-r from-purple-300 to-indigo-300 px-4 py-2 rounded-lg text-black hover:scale-105 hover:opacity-90 
+            <button className="bg-gradient-to-r from-purple-200 to-indigo-200 px-4 py-2 rounded-lg text-black hover:scale-105 hover:opacity-90 
               transition-all duration-300">
               Get Started
             </button>
           </Link>
-
-
           
-        </div> */}
+        </div>
 
         {/* Mobile Button */}
         <button
@@ -108,8 +80,6 @@ const AdminNavbar = () => {
         >
           {open ? <X size={26} /> : <Menu size={26} />}
         </button>
-
-
       </div>
 
       {/* Mobile Menu */}
@@ -141,9 +111,11 @@ const AdminNavbar = () => {
           
         </div>
       )}
+
+      
       
     </nav>
   </>
 }
 
-export default AdminNavbar
+export default PublicNavbar

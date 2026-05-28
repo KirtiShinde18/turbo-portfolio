@@ -4,6 +4,7 @@ import "./globals.css";
 import ReduxProvider from "../redux/reduxProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css"
+import Footer from "../_components/Footer";
 
 
 const syne = Syne({
@@ -38,6 +39,7 @@ export default function RootLayout({
 
           <ToastContainer/>
           {children}
+          <Footer/>
         </ReduxProvider>
       </body>
     </html>

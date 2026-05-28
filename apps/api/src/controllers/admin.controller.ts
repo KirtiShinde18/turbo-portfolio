@@ -1,16 +1,32 @@
 import { Request, Response } from "express";
 import db from "../config/db";
-import { profile } from "../models";
+import { contact, experience, profile, projects } from "../models";
 import cloudinary from "../utils/cloud";
 import { eq } from "drizzle-orm";
 import { 
+  COMMON_RESPONSE,
+  CREATE_CONTACT_REQUEST,
+  CREATE_EXPERIENCE_REQUEST,
   CREATE_PROFILE_REQUEST, 
   CREATE_PROFILE_RESPONSE, 
+  CREATE_PROJECT_REQUEST, 
+  CREATE_SKILL_REQUEST, 
+  CREATE_SKILL_RESPONSE, 
+  DELETE_EXPERIENCE_REQUEST, 
+  DELETE_SKILL_RESPONSE, 
+  Project, 
   READ_PROFILE_RESPONSE, 
+  READ_SKILL_RESPONSE, 
+  UPDATE_EXPERIENCE_REQUEST, 
   UPDATE_PROFILE_REQUEST, 
-  UPDATE_PROFILE_RESPONSE 
+  UPDATE_PROFILE_RESPONSE, 
+  UPDATE_SKILL_REQUEST
 } from "@repo/types";
 import fs from "fs";
+import { projectUpload } from "../utils/upload";
+import { skills } from "../models/skills.model";
+import { sendEmail } from "../utils/email";
+import { adminTemplate, userTemplate } from "../utils/emailTemplates";
 
 // Helper to delete local files after upload
 const cleanLocalFiles = (files: any) => {
@@ -18,6 +34,8 @@ const cleanLocalFiles = (files: any) => {
   if (files?.cv?.[0]?.path) fs.unlinkSync(files.cv[0].path);
 };
 
+
+// ✅ Create Profile
 export const createProfile = async (
   req: Request<{}, {}, CREATE_PROFILE_REQUEST>,
   res: Response<CREATE_PROFILE_RESPONSE>
@@ -80,6 +98,7 @@ export const createProfile = async (
   }
 };
 
+// 👀 READ Profile
 export const getProfile = async (
   req: Request,
   res: Response<READ_PROFILE_RESPONSE>
@@ -99,6 +118,7 @@ export const getProfile = async (
   }
 };
 
+// 🔄 UPDATE PROFILE
 export const updateProfile = async (
   req: Request<{}, {}, UPDATE_PROFILE_REQUEST>,
   res: Response<UPDATE_PROFILE_RESPONSE>
@@ -196,3 +216,480 @@ export const updateProfile = async (
 };
 
 // ======================================================= Project =======================================================
+
+// 🚀 ADD PROJECT
+export const createProject = async (
+  req: Request<{}, {}, CREATE_PROJECT_REQUEST>,
+  res: Response<COMMON_RESPONSE | { project: Project }>
+): Promise<void> => {
+
+  try {
+
+    // 📁 Check image exists
+    if (!req.file) {
+
+      res.status(400).json({
+        message: "Project image is required",
+      });
+
+      return;
+    }
+
+    // ☁️ Upload image to Cloudinary
+    const { secure_url } =
+      await cloudinary.uploader.upload(
+        req.file.path
+      );
+
+    // 📦 Extract frontend data
+    const {
+      title,
+      desc,
+      category,
+      tech,
+      liveURL,
+      githubURL,
+    } = req.body;
+
+    // 💾 Save in PostgreSQL
+    const project = await db
+      .insert(projects)
+      .values({
+        title,
+        desc,
+        category,
+        tech,
+        liveURL,
+        githubURL,
+        hero: secure_url,
+      })
+      .returning();
+
+    // ✅ Success response
+    res.status(201).json({
+      message: "Project created successfully 🚀",
+      project: project[0],
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+// 📖 READ ALL PROJECTS
+export const readProjects = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+
+  try {
+
+    const result = await db
+      .select()
+      .from(projects);
+
+    res.status(200).json({
+      result,
+    });
+
+  } catch (error: any) {
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+// ✏️ UPDATE PROJECT
+export const updateProject = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
+
+  try {
+
+    const id = Number(req.params.id);
+
+    const {
+      title,
+      desc,
+      category,
+      tech,
+      liveURL,
+      githubURL,
+    } = req.body;
+
+    const updateData: any = {
+      title,
+      desc,
+      category,
+      tech,
+      liveURL,
+      githubURL,
+    };
+
+    // ✅ Optional image update
+    if (req.file) {
+
+      const { secure_url } =
+        await cloudinary.uploader.upload(
+          req.file.path
+        );
+
+      updateData.hero = secure_url;
+    }
+
+    // ✅ Update DB
+    const updatedProject = await db
+      .update(projects)
+      .set(updateData)
+      .where(eq(projects.id, id))
+      .returning();
+
+    res.status(200).json({
+      message: "Project updated successfully ✨",
+      project: updatedProject[0],
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+// 🗑️ DELETE PROJECT
+export const deleteProject = async (
+  req: Request<{ id: string }>,
+  res: Response<COMMON_RESPONSE>
+): Promise<void> => {
+
+  try {
+
+    const id = Number(req.params.id);
+
+    // ❌ Delete Project
+    await db
+      .delete(projects)
+      .where(eq(projects.id, id));
+
+    res.status(200).json({
+      message: "Project deleted successfully 🗑️",
+    });
+
+  } catch (error: any) {
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+// ======================================================= skills =======================================================
+
+// ➕ CREATE SKILL
+export const createSkill = async (
+  req: Request<{}, {}, CREATE_SKILL_REQUEST>,
+  res: Response<CREATE_SKILL_RESPONSE>
+): Promise<void> => {
+
+  try {
+
+    const { skill } = req.body;
+
+    // ✅ Validation
+    if (!skill) {
+
+      res.status(400).json({
+        message: "Skill is required",
+      });
+
+      return;
+    }
+
+    // 💾 Insert Skill
+    const result = await db
+      .insert(skills)
+      .values({
+        skill,
+      })
+      .returning();
+
+    res.status(201).json({
+      message: "Skill created successfully 🚀",
+      result: result[0],
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// 👀 READ SKILLS
+export const getSkills = async (
+  req: Request,
+  res: Response<READ_SKILL_RESPONSE>
+): Promise<void> => {
+
+  try {
+
+    const result = await db
+      .select()
+      .from(skills);
+
+    res.status(200).json({
+      message: "Skills fetched successfully ✨",
+      result,
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+      result: [],
+    });
+  }
+};
+
+// ✏️ UPDATE SKILL
+export const updateSkill = async (
+  req: Request<{ id: string }, {}, UPDATE_SKILL_REQUEST>,
+  res: Response<CREATE_SKILL_RESPONSE>
+): Promise<void> => {
+
+  try {
+
+    const id = Number(req.params.id);
+
+    const { skill } = req.body;
+
+    const result = await db
+      .update(skills)
+      .set({
+        skill,
+      })
+      .where(eq(skills.id, id))
+      .returning();
+
+    res.status(200).json({
+      message: "Skill updated successfully ✨",
+      result: result[0],
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ❌ DELETE SKILL
+export const deleteSkill = async (
+  req: Request<{ id: string }>,
+  res: Response<DELETE_SKILL_RESPONSE>
+): Promise<void> => {
+
+  try {
+
+    const id = Number(req.params.id);
+
+    await db
+      .delete(skills)
+      .where(eq(skills.id, id));
+
+    res.status(200).json({
+      message: "Skill deleted successfully 🗑️",
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// ======================================================= Experience =======================================================
+
+// ➕ CREATE EXPERIENCE
+export const createExperience = async (
+  req: Request<{}, {}, CREATE_EXPERIENCE_REQUEST>,
+  res: Response
+) => {
+  try {
+    const { companyName, role, desc, workingDate } = req.body
+
+    const result = await db
+      .insert(experience)
+      .values({
+        companyName,
+        role,
+        desc,
+        workingDate,
+      })
+      .returning()
+
+    return res.status(201).json({
+      message: "Experience created successfully",
+      result: result[0],
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error creating experience",
+    })
+  }
+}
+
+// 👀 GET ALL EXPERIENCE
+export const getAllExperience = async (req: Request, res: Response) => {
+  try {
+    const result = await db.select().from(experience)
+
+    return res.status(200).json({
+      message: "Experience fetched successfully",
+      result,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching experience",
+    })
+  }
+}
+
+// ✏️ UPDATE EXPERIENCE
+export const updateExperience = async (
+  req: Request<{}, {}, UPDATE_EXPERIENCE_REQUEST>,
+  res: Response
+) => {
+  try {
+    const { id, companyName, role, desc, workingDate } = req.body
+
+    const result = await db
+      .update(experience)
+      .set({
+        companyName,
+        role,
+        desc,
+        workingDate,
+        updatedAt: new Date(),
+      })
+      .where(eq(experience.id, id))   // ✅ FIXED
+      .returning()
+
+    return res.status(200).json({
+      message: "Experience updated successfully",
+      result: result[0],
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error updating experience",
+    })
+  }
+}
+
+// ❌ DELETE EXPERIENCE
+export const deleteExperience = async (
+  req: Request<{}, {}, DELETE_EXPERIENCE_REQUEST>,
+  res: Response
+) => {
+  try {
+    const { id } = req.body
+
+    await db
+      .delete(experience)
+      .where(eq(experience.id, id))   // ✅ FIXED
+
+    return res.status(200).json({
+      message: "Experience deleted successfully",
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error deleting experience",
+    })
+  }
+}
+
+// ======================================================= Contact =======================================================
+// 💬 CREATE CONTACT
+export const createContact = async (
+  req: Request<{}, {}, CREATE_CONTACT_REQUEST>,
+  res: Response
+) => {
+  try {
+    const { name, email, message } = req.body;
+
+    // ❗ Validation (important)
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    // 💾 Save to DB
+    const result = await db
+      .insert(contact)
+      .values({
+        name,
+        email,
+        message,
+      })
+      .returning();
+
+    // 📩 ADMIN EMAIL
+    try {
+      await sendEmail({
+        email: process.env.EMAIL as string,
+        subject: "New Contact Message",
+        message: adminTemplate({ name, email, message }),
+      });
+    } catch (err) {
+      console.log("Admin email failed:", err);
+    }
+
+    // 📩 USER EMAIL
+    try {
+      await sendEmail({
+        email,
+        subject: "Thanks for contacting",
+        message: userTemplate({ name, message }),
+      });
+    } catch (err) {
+      console.log("User email failed:", err);
+    }
+
+    // ✅ RESPONSE
+    return res.status(201).json({
+      message: "Contact Created Successfully 🎉",
+      result: result[0],
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Unable to Create Contact",
+    });
+  }
+};

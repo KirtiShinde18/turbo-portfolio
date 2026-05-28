@@ -1,3 +1,6 @@
 export * from "./User.model"
 export * from "./Profile.model"
 export * from "./Projects.model"
+export * from "./skills.model"
+export * from "./Experience.model"
+export * from "./Contact.model"

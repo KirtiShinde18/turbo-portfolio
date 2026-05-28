@@ -1,2 +1,6 @@
 export * from "./auth"
 export * from "./admin"
+export * from "./project"
+export * from "./skills"
+export * from "./experience"
+export * from "./contact"
