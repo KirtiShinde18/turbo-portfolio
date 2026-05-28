@@ -31,3 +31,5 @@ const PORT = 5500;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`); // 💻 My backend is officially slaying
 });
+
+export default app
