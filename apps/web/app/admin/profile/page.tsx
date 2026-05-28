@@ -193,7 +193,7 @@ useEffect(() => {
 }, [isOpen])
 
   return (
-    <div className="min-h-screen md:mt-10 px-4">
+    <div className="min-h-screen md:mt-10 px-4 my-5">
       <div className="mt-20 max-w-7xl mx-auto text-center text-black">
 
         <div className=" bg-gray-50 rounded-xl shadow text-start p-6">

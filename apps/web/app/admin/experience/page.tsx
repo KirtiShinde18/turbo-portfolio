@@ -113,7 +113,7 @@ const Experience = () => {
         
                     <button
                       onClick={() => setIsOpen(true)}
-                      className="px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center"
+                      className="cursor-pointer px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center"
                     >
                       <Edit size={18} /> Create
                     </button>
@@ -160,14 +160,14 @@ const Experience = () => {
                             
                             <button
                               onClick={() => handleEdit(item)}
-                              className="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded"
+                              className="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer"
                             >
                               Edit
                             </button>
                 
                             <button
                               onClick={() => handleDelete({ id: Number(item.id) })}
-                              className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded"
+                              className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer"
                             >
                               Delete
                             </button>
@@ -227,14 +227,14 @@ const Experience = () => {
                       setEdit(null)
                       reset()
                     }}
-                    className="px-4 py-2 bg-gray-300 rounded-lg"
+                    className="px-4 py-2 bg-gray-300 rounded-lg cursor-pointer"
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center"
+                    className="px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center cursor-pointer"
                   >
                     {/* Create */}
                     {edit ? "Update" : "Create"}

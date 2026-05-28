@@ -5,11 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CREATE_PROJECT_REQUEST, DELETE_PROJECT_REQUEST } from '@repo/types'
 import clsx from 'clsx'
 import { Edit, Edit2,  GitBranchPlus,  Trash } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import z from 'zod'
 import { useCreateProjectMutation, useDeleteProjectMutation, useGetProjectQuery, useUpdateProjectMutation } from '../../../redux/apis/admin.api'
+import { FaGithub } from 'react-icons/fa'
 
 
 const optionalFileList = z.any().refine(
@@ -25,6 +26,7 @@ const Project = () => {
 
   const [edit, setEdit] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("All")
+  const fileRef = useRef<HTMLInputElement | null>(null)
 
   // const [edit, setEdit] = useState<string | null>(null)
   const [addProject, { isLoading }] = useCreateProjectMutation()
@@ -88,7 +90,7 @@ const Project = () => {
           title: "",
           desc: "",
           category: "",
-          hero: "",
+          hero: undefined,
           tech: "",
           liveURL: "",
           githubURL: ""
@@ -96,6 +98,13 @@ const Project = () => {
 
         setIsOpen(false)
         setEdit(null)
+
+        setPreview(null)
+        setShowEditImage(false)
+
+        if (fileRef.current) {
+          fileRef.current.value = ""
+        }
 
         toast.success("Project updated successfully 🎉")
 
@@ -173,7 +182,7 @@ const Project = () => {
 
             <button
               onClick={() => setIsOpen(true)}
-              className="px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center"
+              className=" cursor-pointer px-3 py-2 bg-black text-white rounded-lg flex gap-2 items-center"
             >
               <Edit size={18} /> Create
             </button>
@@ -186,7 +195,7 @@ const Project = () => {
 
             <button
               onClick={() => setActiveTab("All")}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`px-4 py-2 rounded-lg transition cursor-pointer ${
                 activeTab === "All"
                   ? "bg-black text-white"
                   : "bg-gray-200 text-black"
@@ -197,7 +206,7 @@ const Project = () => {
         
             <button
               onClick={() => setActiveTab("Web App")}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`px-4 py-2 rounded-lg transition cursor-pointer ${
                 activeTab === "Web App"
                   ? "bg-black text-white"
                   : "bg-gray-200 text-black"
@@ -208,7 +217,7 @@ const Project = () => {
         
             <button
               onClick={() => setActiveTab("Mobile App")}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`px-4 py-2 rounded-lg transition cursor-pointer ${
                 activeTab === "Mobile App"
                   ? "bg-black text-white"
                   : "bg-gray-200 text-black"
@@ -307,7 +316,7 @@ const Project = () => {
                         target="_blank"
                         className="px-4 py-2 border border-white/20 rounded-md flex items-center gap-2 cursor-pointer"
                       >
-                        <GitBranchPlus size={16} /> GitHub
+                        <FaGithub size={16} /> GitHub
                       </a>
         
                     </div>
@@ -327,10 +336,10 @@ const Project = () => {
                       {/* DELETE */}
                       <button
                         type="button"
-                        className="p-2 rounded-md hover:bg-red-500/10 transition cursor-pointer"
+                        className="p-2 rounded-md hover:bg-red-500/10 transition cursor-pointer "
                         onClick={() => handleDelete({ id: item.id })}
                       >
-                        <Trash className="w-5 h-5 text-red-500 hover:scale-110 transition" />
+                        <Trash className="w-5 h-5 text-red-500 hover:scale-110 transition " />
                       </button>
         
                     </div>
@@ -403,7 +412,7 @@ const Project = () => {
                         <button
                           type="button"
                           onClick={() => setShowEditImage(true)}
-                          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                          className="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                         >
                           Change Image
                         </button>
@@ -445,7 +454,7 @@ const Project = () => {
                               setShowEditImage(false)
                               setPreview(null)
                             }}
-                            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+                            className="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -477,7 +486,7 @@ const Project = () => {
                       setEdit(null)
                       reset()
                     }}
-                    className="px-4 py-2 bg-gray-300 rounded-lg cursor-pointer"
+                    className=" cursor-pointer px-4 py-2 bg-gray-300 rounded-lg cursor-pointer"
                   >
                     Cancel
                   </button>
