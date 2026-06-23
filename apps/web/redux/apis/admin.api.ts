@@ -191,7 +191,7 @@ export const adminApi = createApi({
         
             // ❌ DELETE
             deleteExperience: builder.mutation<EXPERIENCE_COMMON_RESPONSE, DELETE_EXPERIENCE_REQUEST>({
-              query: (id) => ({
+              query: ({ id }) => ({
                 url: `/experience`,
                 method: "DELETE",
                 body: { id },

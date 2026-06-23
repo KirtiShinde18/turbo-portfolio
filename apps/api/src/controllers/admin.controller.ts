@@ -17,13 +17,12 @@ import {
   Project, 
   READ_PROFILE_RESPONSE, 
   READ_SKILL_RESPONSE, 
-  UPDATE_EXPERIENCE_REQUEST, 
+  UPDATE_EXPERIENCE_REQUEST,                
   UPDATE_PROFILE_REQUEST, 
   UPDATE_PROFILE_RESPONSE, 
   UPDATE_SKILL_REQUEST
 } from "@repo/types";
 import fs from "fs";
-import { projectUpload } from "../utils/upload";
 import { skills } from "../models/skills.model";
 import { sendEmail } from "../utils/email";
 import { adminTemplate, userTemplate } from "../utils/emailTemplates";

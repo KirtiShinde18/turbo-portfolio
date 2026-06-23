@@ -80,7 +80,7 @@ const Experience = () => {
 
     // ✏️ edit 
    const handleEdit = (data: any) => {
-    setEdit(data._id)     
+    setEdit(data.id)     
     reset({
         companyName: data.companyName,
         role: data.role,

@@ -1,8 +1,7 @@
 import { Router } from "express";
 
-import { createProfile, getProfile, updateProfile } from "../controllers/rough.controller";
 import { profileFieldsUpload, projectUpload } from "../utils/upload";
-import { createContact, createExperience, createProject, createSkill, deleteExperience, deleteProject, deleteSkill, getAllExperience, getSkills, readProjects, updateExperience, updateProject, updateSkill } from "../controllers/admin.controller";
+import { createContact, createExperience, createProfile, createProject, createSkill, deleteExperience, deleteProject, deleteSkill, getAllExperience, getProfile, getSkills, readProjects, updateExperience, updateProfile, updateProject, updateSkill } from "../controllers/admin.controller";
 
 const router = Router();
 
